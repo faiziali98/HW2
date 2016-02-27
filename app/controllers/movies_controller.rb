@@ -1,5 +1,5 @@
 class MoviesController < ApplicationController
-
+  attr_accessor :hilite, :sort 
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
@@ -11,7 +11,13 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    @hilite = "hilite"
+    if (params.has_key?(:sort_by))
+      @movies = Movie.order ("#{params[:sort_by]} ASC")
+      @sort = params[:sort_by]
+    else
+      @movies = Movie.all
+    end
   end
 
   def new
