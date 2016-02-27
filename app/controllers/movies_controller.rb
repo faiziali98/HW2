@@ -58,17 +58,16 @@ class MoviesController < ApplicationController
   def ups
     k = movie_up[:toup]
     t = movie_up[:title]
+    rdate = movie_up[:release_date]
     rat = movie_up[:rating]
-    
+    uphash={}
     @movie = Movie.find_by title: k
     
     if (@movie!=nil)
-      if (t=="" || rat=="")
-        flash[:notice] = "Error no field can be empty"
-        redirect_to movie_path(@movie)
-        return
-      end
-      @movie.update_attributes!(movie_params)
+      uphash[:title]= if (t=="") then @movie.title else t end 
+      uphash[:release_date]= if (rdate=="") then @movie.release_date else release_date end 
+      uphash[:rating]= if (rat=="") then @movie.rating else rat end
+      @movie.update_attributes!(uphash)
       flash[:notice] = "Successfully updated."
       redirect_to movie_path(@movie)
       return
