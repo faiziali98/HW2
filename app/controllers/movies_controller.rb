@@ -3,7 +3,11 @@ class MoviesController < ApplicationController
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
-
+  
+  def movie_up
+    params.require(:movie).permit(:toup, :title, :rating, :description, :release_date)
+  end
+  
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -47,5 +51,31 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
+  
+  def upmovie
+  end
+  
+  def ups
+    k = movie_up[:toup]
+    t = movie_up[:title]
+    rat = movie_up[:rating]
+    
+    @movie = Movie.find_by title: k
+    
+    if (@movie!=nil)
+      if (t=="" || rat=="")
+        flash[:notice] = "Error no field can be empty"
+        redirect_to movie_path(@movie)
+        return
+      end
+      @movie.update_attributes!(movie_params)
+      flash[:notice] = "Successfully updated."
+      redirect_to movie_path(@movie)
+      return
+    else
+      flash[:notice] = "#{k} Error no such movie found."
+      redirect_to movies_path
+      return
+    end
+  end
 end
