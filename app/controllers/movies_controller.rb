@@ -1,5 +1,5 @@
 class MoviesController < ApplicationController
-  attr_accessor :hilite, :sort, :all_ratings 
+  attr_accessor :hilite, :sort, :all_ratings
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
@@ -17,21 +17,20 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = ['G', 'PG', 'PG-13', 'R']
     @hilite = "hilite"
+    session[:ratings] = params[:ratings] if params[:ratings]
+    session[:sort_by] = params[:sort_by] if params[:sort_by]
 
-    if (params.has_key?(:sort_by)||params.has_key?(:ratings))
-      @sort = params[:sort_by]
-      @ratings = params[:ratings].keys if params[:ratings].respond_to?(:keys) 
-
-      if (params.has_key?(:ratings)&&params.has_key?(:sort_by)) 
-        @movies = Movie.find(:all, order: session[:sort],conditions: ["rating IN (?)", @ratings])
-      elsif (params.has_key?(:ratings)) 
-        @movies = Movie.where("rating IN (?)", @ratings)
-      elsif (params.has_key?(:sort_by)) 
-        @movies = Movie.order ("#{params[:sort_by]} ASC")
-      end
-      
+    if session[:ratings] || session[:sort_by]
+      @sort = session[:sort_by]
+      @ratings = session[:ratings].keys if session[:ratings].respond_to?(:keys)
+      @movies = Movie.where("rating IN (?)", @ratings).order(session[:sort_by])
     else
+      session[:ratings] = {'G'=>1, 'PG'=>1, 'PG-13'=>1, 'R'=>1} if not session[:ratings]
       @movies = Movie.all
+    end
+
+    if session[:ratings] != params[:ratings] || session[:sort_by] != params[:sort_by]
+      redirect_to movies_path(ratings: session[:ratings], sort_by: session[:sort_by])
     end
   end
 
