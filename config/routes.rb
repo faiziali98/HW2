@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   #   resources :products
   get 'movies/update' => 'movies#upmovie'
   put '/movies(.:format)' => 'movies#ups'
+  
+  get 'movies/delete' => 'movies#delete'
+  put '/movies/delete(.:format)' => 'movies#delmov'
   resources :movies
   
   # Example resource route with options:

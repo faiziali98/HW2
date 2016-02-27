@@ -78,4 +78,29 @@ class MoviesController < ApplicationController
       return
     end
   end
+  
+  def delete
+  end
+  
+  def delmov
+    t = movie_up[:title]
+    rat = movie_up[:rating]
+    if (t!=nil)
+      @movie = Movie.find_by title: t
+      @movie.destroy
+      flash[:notice] = "Movie '#{@movie.title}' deleted."
+      redirect_to movies_path
+      return
+    elsif(rat!=nil)
+      movies = Movie.where(rating: rat)
+      movies.all.each do |movie|
+        movie.destroy
+      end
+      redirect_to movies_path
+      return
+    else
+      redirect_to movies_path
+      return
+    end
+  end
 end
